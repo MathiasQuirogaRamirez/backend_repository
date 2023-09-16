@@ -8,28 +8,33 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get ("/products", async (request, response) => {
     try {
-      const products = await productManager.getProducts();
+      let products = await productManager.getProducts();
+      const { limit } = request.query;
+      
+      if (limit) 
+        products = products.slice(0, limit);
+
       if (!products.length) {
         response.status(200).json({ message: "No products found" });
       } else {
         response.status(200).json({ message: 'Products found', products });
       }
     } catch (error) {
-      res.status(500).json({ message: error });
+      response.status(500).json({ message: error });
     }
   });
 
   app.get("/products/:id", async (request, response) => {
     const { id } = request.params;
     try {
-      const product = await productManager.getProductbyId(parseInt(id));
-      if (product === "Not find") {
-        response.status(400).json({ message: product });
+      const product_response = await productManager.getProductbyId(parseInt(id));
+      if (product_response === "Not find") {
+        response.status(400).json({ message: product_response });
       } else {
-        response.status(200).json({ message: 'Product found', product });
+        response.status(200).json({ message: 'Product found', product_response });
       }
     } catch (error) {
-      res.status(500).json({ message: error })
+      response.status(500).json({ message: error })
     }
   });
 
@@ -39,17 +44,17 @@ app.get ("/products", async (request, response) => {
       const { title, description, price, thumbnail, code, stock } = request.body;
 
       if (!title || !description || !price || !thumbnail || !code || !stock) {
-        response.status(400).json({ message: product });
+        response.status(400).json({ message: "Data not found" });
       } else {
         response.status(200).json({ message: 'Product created', product });
       }
     } catch (error) {
-      response.status(500).json({ message: error })
+      response.status(500).json({ message: error });
     }
   });
 
   app.delete("/products/:id", async (request, response) => {
-    const { id } = req.params;
+    const { id } = request.params;
     try {
       const delete_message = await productManager.deleteProduct(parseInt(id));
       if (delete_message === "Not find") {
@@ -58,7 +63,7 @@ app.get ("/products", async (request, response) => {
         response.status(200).json({ message: delete_message });
       }
     } catch (error) {
-      res.status(500).json({ message: error })
+      response.status(500).json({ message: error })
     }
   });
   
