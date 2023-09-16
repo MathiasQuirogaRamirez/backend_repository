@@ -1,0 +1,3 @@
+[{"id":1, "title":"title1", "description":"description1", "price":26.99, "thumbnail":"url1", "code":"123458", "stock":90},
+{"id":2, "title":"title2", "description":"description2", "price":29.99, "thumbnail":"url2", "code":"123459", "stock":120},
+{"id":3, "title":"title3", "description":"description3", "price":12.50, "thumbnail":"url3", "code":"123460", "stock":65}]
