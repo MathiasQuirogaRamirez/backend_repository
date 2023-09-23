@@ -7,7 +7,7 @@ class ProductManager {
     }
 
     found = (id, products) => {
-        return products.find ((event) => event.id === id);
+        return products.find ((item) => item.id === id);
     }
 
     async addProduct (obj) {
@@ -15,19 +15,22 @@ class ProductManager {
         const products = await this.getProducts();
 
         const validateCode = (products) => {
-            const validatioOne = obj.title && obj.description && obj.price && obj.thumbnail && obj.code && obj.stock;
+            const validatioOne = obj.title && obj.description && obj.price && obj.code && obj.stock && obj.category;
             const validationTwo = !products.find ((event) => event.code === obj.code);
             return validatioOne && validationTwo;
         }
 
         const id = products.length ? products.length + 1 : 1;
-        const product = { id, ...obj };
+        let status = true;
+        const product = { id, status,  ...obj };
         
         if (validateCode(products)) {
             products.push(product);
             await fs.promises.writeFile(this.path, JSON.stringify(products));
             return product;
         }
+
+        return false;
     }
 
     async getProducts () {
@@ -53,14 +56,14 @@ class ProductManager {
         }
     }
 
-    async updateProduct (product) {
+    async updateProduct (id, obj) {
         try {
             let products = await this.getProducts();
-            if (!this.found(product.id, products)) 
+            
+            const index = products.findIndex((item) => item.id === id);
+            if (index === -1)
                 return "Not find";
-            await this.deleteProduct(product.id);
-            products = await this.getProducts();
-            products.push(product);
+            products[index] = { ...products[index], ...obj };
             await fs.promises.writeFile(this.path, JSON.stringify(products));
             return "Product updated correctly";
         } catch (error) {
@@ -73,7 +76,7 @@ class ProductManager {
             const products = await this.getProducts();
             if (!this.found(id, products)) 
                 return "Not find";
-            const new_products = products.filter(event => event.id !== id);
+            const new_products = products.filter(item => item.id !== id);
             await fs.promises.writeFile(this.path, JSON.stringify(new_products));
             return "Product " + id + " deleted";
         } catch (error) {
