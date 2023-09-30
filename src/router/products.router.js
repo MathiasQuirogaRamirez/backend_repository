@@ -1,9 +1,10 @@
-import { Router } from "express";
+import { Router, request, response } from "express";
 import { productManager } from "../ProductManager.js";
 
 const productsRouter = Router ();
 
 /*** Products  ***/
+
 productsRouter.get ("/", async (request, response) => {
     try {
       let products = await productManager.getProducts();
@@ -37,6 +38,7 @@ productsRouter.get ("/", async (request, response) => {
   });
 
   productsRouter.post("/", async (request, response) => {
+    
     try {
       const product = await productManager.addProduct(request.body);
 
@@ -44,6 +46,7 @@ productsRouter.get ("/", async (request, response) => {
         response.status(400).json({ message: "Data not found" });
       } else {
         response.status(200).json({ message: 'Product created', product });
+        //emit
       }
     } catch (error) {
       response.status(500).json({ message: error });
