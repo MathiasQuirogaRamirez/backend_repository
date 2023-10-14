@@ -56,10 +56,10 @@ socketServer.on("connection", (socket) => {
 
  });
 
- app.get("/", (request, response) => {
+app.get("/", (request, response) => {
   response.render("home");
 });
 
 app.get("/realtimeproducts", (request, response) => {
   response.render("realTimeProducts");
-});
+}); 

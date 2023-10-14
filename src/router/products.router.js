@@ -1,5 +1,5 @@
-import { Router, request, response } from "express";
-import { productManager } from "../ProductManager.js";
+import { Router } from "express";
+import { productsManager } from "../dao/productsManager.js";
 
 const productsRouter = Router ();
 
@@ -7,11 +7,11 @@ const productsRouter = Router ();
 
 productsRouter.get ("/", async (request, response) => {
     try {
-      let products = await productManager.getProducts();
-      const { limit } = request.query;
+      let products = await productsManager.findAll();
+      /*const { limit } = request.query;
       
       if (limit) 
-        products = products.slice(0, limit);
+        products = products.slice(0, limit);*/
 
       if (!products.length) {
         response.status(200).json({ message: "No products found" });
@@ -26,12 +26,13 @@ productsRouter.get ("/", async (request, response) => {
   productsRouter.get("/:id", async (request, response) => {
     const { id } = request.params;
     try {
-      const product_response = await productManager.getProductbyId(parseInt(id));
-      if (product_response === "Not find") {
+      const product = await productsManager.findById(id);
+      /*if (product_response === "Not find") {
         response.status(400).json({ message: product_response });
       } else {
         response.status(200).json({ message: 'Product found', product_response });
-      }
+      }*/
+      response.status(200).json({ message: "Product", product });
     } catch (error) {
       response.status(500).json({ message: error })
     }
@@ -40,14 +41,15 @@ productsRouter.get ("/", async (request, response) => {
   productsRouter.post("/", async (request, response) => {
     
     try {
-      const product = await productManager.addProduct(request.body);
+      const product = await productsManager.createOne(request.body);
 
-      if (!product) {
+      /*if (!product) {
         response.status(400).json({ message: "Data not found" });
       } else {
         response.status(200).json({ message: 'Product created', product });
-        //emit
-      }
+      }*/
+
+      response.status(200).json({ message: 'Product created', product });
     } catch (error) {
       response.status(500).json({ message: error });
     }
@@ -56,12 +58,13 @@ productsRouter.get ("/", async (request, response) => {
   productsRouter.delete("/:id", async (request, response) => {
     const { id } = request.params;
     try {
-      const delete_message = await productManager.deleteProduct(parseInt(id));
-      if (delete_message === "Not find") {
+      const user = await productsManager.deleteOne(id);
+      /*if (delete_message === "Not find") {
         response.status(400).json({ message: delete_message });
       } else {
         response.status(200).json({ message: delete_message });
-      }
+      }*/
+      response.status(200).json({ message: 'Deleted', user });
     } catch (error) {
       response.status(500).json({ message: error })
     }
@@ -70,15 +73,17 @@ productsRouter.get ("/", async (request, response) => {
   productsRouter.put("/:id", async (request, response) => {
     const { id } = request.params;
     try {
-      const update_message = await productManager.updateProduct(parseInt(id), request.body);
-      if (update_message === "Not find") {
+      const product = await productsManager.updateOne(id, request.body);
+      /*if (update_message === "Not find") {
         response.status(400).json({ message: update_message });
       } else {
         response.status(200).json({ message: update_message });
-      }
+      }*/
+      response.status(200).json({ message: 'Updated', product });
     } catch (error) {
       response.status(500).json({ message: error })
     }
   });
 
-  export { productsRouter };
+  //export { productsRouter };
+  export default productsRouter;
